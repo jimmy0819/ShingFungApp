@@ -1,0 +1,217 @@
+﻿<Window x:Class="ShinFung.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ShinFung"
+        xmlns:p="clr-namespace:ShinFung.Properties"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <!--main-->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <ScrollViewer HorizontalScrollBarVisibility="Visible">
+                    <ListView x:Name="MainList" ItemsSource="{Binding Data}" SelectionChanged="MainList_Selected" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="ID" Width="auto" DisplayMemberBinding="{Binding Id}"></GridViewColumn>
+                                <GridViewColumn Header="姓名" Width="auto" DisplayMemberBinding="{Binding Name}"></GridViewColumn>
+                                <GridViewColumn Header="生肖" Width="auto" DisplayMemberBinding="{Binding Zodiac}"></GridViewColumn>
+                                <GridViewColumn Header="年齡" Width="auto" DisplayMemberBinding="{Binding Age}"></GridViewColumn>
+                                <GridViewColumn Header="光明燈" Width="auto" DisplayMemberBinding="{Binding S_A}"></GridViewColumn>
+                                <GridViewColumn Header="太歲" Width="auto" DisplayMemberBinding="{Binding S_B}"></GridViewColumn>
+                                <GridViewColumn Header="制化" Width="auto" DisplayMemberBinding="{Binding S_C}"></GridViewColumn>
+                                <GridViewColumn Header="制化類型" Width="auto" DisplayMemberBinding="{Binding S_C_Type}"></GridViewColumn>
+                                <GridViewColumn Header="香油錢" Width="auto" DisplayMemberBinding="{Binding D_A}"></GridViewColumn>
+                                <GridViewColumn Header="磧爐錢" Width="auto" DisplayMemberBinding="{Binding D_B}"></GridViewColumn>
+                                <GridViewColumn Header="拜亭燈龍" Width="auto" DisplayMemberBinding="{Binding S_D}"></GridViewColumn>
+                                <GridViewColumn Header="內殿燈籠" Width="auto" DisplayMemberBinding="{Binding S_E}"></GridViewColumn>
+                                <GridViewColumn Header="電話號碼" Width="auto" DisplayMemberBinding="{Binding PhoneNumber}"></GridViewColumn>
+                                <GridViewColumn Header="日期" Width="auto" DisplayMemberBinding="{Binding Datetime}"></GridViewColumn>
+                                <GridViewColumn Header="總和" Width="auto" DisplayMemberBinding="{Binding Sum}"></GridViewColumn>
+                                <GridViewColumn Header="拜亭名稱" Width="auto" DisplayMemberBinding="{Binding S_D_Name}"></GridViewColumn>
+                                <GridViewColumn Header="內殿名稱" Width="auto" DisplayMemberBinding="{Binding S_E_Name}"></GridViewColumn>
+                                <GridViewColumn Header="地址" Width="auto" DisplayMemberBinding="{Binding Address}"></GridViewColumn>
+                                <GridViewColumn Header="對象名稱" Width="auto" DisplayMemberBinding="{Binding Target_Name}"></GridViewColumn>
+                                <GridViewColumn Header="經手人" Width="auto" DisplayMemberBinding="{Binding Employee_Name}"></GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </ScrollViewer>
+            </Grid>
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <ScrollViewer >
+                    <StackPanel Grid.Column="0">
+                        <!--inputs-->
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock>姓名</TextBlock>
+                            <TextBox MinWidth="20" x:Name="TextBox_Name"></TextBox>
+                            <TextBlock >生肖</TextBlock>
+                            <TextBox MinWidth="20" x:Name="TextBox_Zodiac"></TextBox>
+                            <TextBlock >年齡</TextBlock>
+                            <local:DigitBox MinWidth="20" x:Name="TextBox_Age"></local:DigitBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock>香油錢</TextBlock>
+                                <CheckBox Name="CheckBox_D_A"></CheckBox>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock>磧爐錢</TextBlock>
+                                <CheckBox Name="CheckBox_D_B"></CheckBox>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock>光明燈</TextBlock>
+                                    <CheckBox Name="CheckBox_S_A"></CheckBox>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock>太歲</TextBlock>
+                                    <CheckBox Name="CheckBox_S_B"></CheckBox>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock>制化</TextBlock>
+                                    <CheckBox Name="CheckBox_S_C"></CheckBox>
+                                </StackPanel>
+                                <ListBox Name="ListBox_S_C" >
+                                    <ListBoxItem>
+                                        <RadioButton IsChecked="{Binding Path=IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}" Content="喪門"></RadioButton>
+                                    </ListBoxItem>
+                                    <ListBoxItem>
+                                        <RadioButton IsChecked="{Binding Path=IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}" Content="五鬼官符"></RadioButton>
+                                    </ListBoxItem>
+                                    <ListBoxItem>
+                                        <RadioButton IsChecked="{Binding Path=IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}" Content="死符"></RadioButton>
+                                    </ListBoxItem>
+                                    <ListBoxItem>
+                                        <RadioButton IsChecked="{Binding Path=IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}" Content="歲破"></RadioButton>
+                                    </ListBoxItem>
+                                    <ListBoxItem>
+                                        <RadioButton IsChecked="{Binding Path=IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}" Content="白虎"></RadioButton>
+                                    </ListBoxItem>
+                                    <ListBoxItem>
+                                        <RadioButton IsChecked="{Binding Path=IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}" Content="天狗"></RadioButton>
+                                    </ListBoxItem>
+                                    <ListBoxItem>
+                                        <RadioButton IsChecked="{Binding Path=IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged,RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}" Content="病符"></RadioButton>
+                                    </ListBoxItem>
+                                </ListBox>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock>拜亭燈籠</TextBlock>
+                                    <CheckBox Name="CheckBox_S_D"></CheckBox>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock>內殿燈籠</TextBlock>
+                                    <CheckBox Name="CheckBox_S_E"></CheckBox>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock>申請人</TextBlock>
+                            <TextBox MinWidth="20" Name="TextBox_TargetName"></TextBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock>地址</TextBlock>
+                            <TextBox MinWidth="20" Name="TextBox_Address"></TextBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock>經手人</TextBlock>
+                            <TextBox MinWidth="20" Name="TextBox_Employee_Name"></TextBox>
+                            <TextBlock>電話</TextBlock>
+                            <local:DigitBox MinWidth="20" x:Name="TextBox_PhoneNumber"></local:DigitBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock MouseDown="Sum_MouseDown">總和:</TextBlock>
+                            <TextBlock x:Name="TextBlock_Sum"></TextBlock>
+                        </StackPanel>
+                        <UniformGrid Rows="2">
+                            <Button Click="Search">搜尋</Button>
+                            <Button Click="AddData">新增</Button>
+                            <Button Click="ClearData">清除</Button>
+                            <Button Click="ListData">列表</Button>
+                            <Button Click="Decline_Click">註銷</Button>
+                            <Button Click="Edit_Click">更改</Button>
+                        </UniformGrid>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="1">
+            <!--setting-->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="78*"/>
+                <ColumnDefinition Width="11*"/>
+                <ColumnDefinition Width="89*"/>
+                <ColumnDefinition Width="89*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Grid.Column="0"  Orientation="Horizontal" Grid.ColumnSpan="3" Margin="0,0,266,29" Grid.RowSpan="2">
+                <TextBlock>香油錢</TextBlock>
+                <local:DigitBox MinWidth="20" MaxHeight="50" x:Name="TextBox_D_A" Text="{Binding Source={x:Static p:Settings.Default},Path=D_A_Money,Mode=TwoWay}"></local:DigitBox>
+                <TextBlock>$</TextBlock>
+            </StackPanel>
+            <StackPanel Grid.Row="0" Grid.Column="2"  Orientation="Horizontal" Margin="0,0,0,29" Grid.RowSpan="2">
+                <TextBlock>磧爐錢</TextBlock>
+                <local:DigitBox MinWidth="20" MaxHeight="50" x:Name="TextBox_D_B" Text="{Binding Source={x:Static p:Settings.Default},Path=D_B_Money,Mode=TwoWay}"></local:DigitBox>
+                <TextBlock>$</TextBlock>
+            </StackPanel>
+            <StackPanel Grid.Row="0" Grid.Column="2"  Orientation="Horizontal" Grid.ColumnSpan="2" Margin="266,0,0,29" Grid.RowSpan="2">
+                <TextBlock>光明燈錢</TextBlock>
+                <local:DigitBox MinWidth="20" MaxHeight="50" x:Name="TextBox_S_A" Text="{Binding Source={x:Static p:Settings.Default},Path=S_A_Money,Mode=TwoWay}"></local:DigitBox>
+                <TextBlock>$</TextBlock>
+            </StackPanel>
+            <StackPanel Grid.Row="1" Grid.Column="0"  Orientation="Horizontal" Grid.ColumnSpan="3" Margin="0,0,266,29" Grid.RowSpan="2">
+                <TextBlock>太歲錢</TextBlock>
+                <local:DigitBox MinWidth="20" MaxHeight="50" x:Name="TextBox_S_B" Text="{Binding Source={x:Static p:Settings.Default},Path=S_B_Money,Mode=TwoWay}"></local:DigitBox>
+                <TextBlock>$</TextBlock>
+            </StackPanel>
+            <StackPanel Grid.Row="1" Grid.Column="2"  Orientation="Horizontal" Margin="0,0,0,29" Grid.RowSpan="2">
+                <TextBlock>制化錢</TextBlock>
+                <local:DigitBox MinWidth="20" MaxHeight="50" x:Name="TextBox_S_C" Text="{Binding Source={x:Static p:Settings.Default},Path=S_C_Money,Mode=TwoWay}"></local:DigitBox>
+                <TextBlock>$</TextBlock>
+            </StackPanel>
+            <StackPanel Grid.Row="1" Grid.Column="2"  Orientation="Horizontal" Grid.ColumnSpan="2" Margin="266,0,0,29" Grid.RowSpan="2">
+                <TextBlock>拜亭燈籠錢</TextBlock>
+                <local:DigitBox MinWidth="20" MaxHeight="50" x:Name="TextBox_S_D" Text="{Binding Source={x:Static p:Settings.Default},Path=S_D_Money,Mode=TwoWay}"></local:DigitBox>
+                <TextBlock>$</TextBlock>
+            </StackPanel>
+            <StackPanel Grid.Row="2" Grid.Column="0"  Orientation="Horizontal" Grid.ColumnSpan="3" Margin="0,0,266,29" Grid.RowSpan="2">
+                <TextBlock>內殿燈籠錢</TextBlock>
+                <local:DigitBox MinWidth="20" MaxHeight="50" x:Name="TextBox_S_E" Text="{Binding Source={x:Static p:Settings.Default},Path=S_E_Money,Mode=TwoWay}"></local:DigitBox>
+                <TextBlock>$</TextBlock>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
