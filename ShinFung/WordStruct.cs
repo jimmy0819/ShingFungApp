@@ -145,6 +145,7 @@ namespace ShinFung
                 mon = data.ContainsKey("mon") ? data["mon"] : string.Empty;
                 day = data.ContainsKey("day") ? data["day"] : string.Empty;
             }
+
         }
 
     }

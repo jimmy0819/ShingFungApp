@@ -149,13 +149,14 @@
                             <TextBlock MouseDown="Sum_MouseDown">總和:</TextBlock>
                             <TextBlock x:Name="TextBlock_Sum"></TextBlock>
                         </StackPanel>
-                        <UniformGrid Rows="2">
+                        <UniformGrid Columns="3">
                             <Button Click="Search">搜尋</Button>
                             <Button Click="AddData">新增</Button>
                             <Button Click="ClearData">清除</Button>
                             <Button Click="ListData">列表</Button>
                             <Button Click="Decline_Click">註銷</Button>
                             <Button Click="Edit_Click">更改</Button>
+                            <Button Click="GenerateShinWord">產生WORD</Button>
                         </UniformGrid>
                     </StackPanel>
                 </ScrollViewer>

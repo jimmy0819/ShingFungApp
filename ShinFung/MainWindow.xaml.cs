@@ -370,7 +370,7 @@ namespace ShinFung
         {
             if(CheckBox_D_A.IsChecked == true)
             {
-                Get_D_A();// read and write files
+                //Get_D_A();// read and write files
             }
             if (CheckBox_D_B.IsChecked == true)
             {
@@ -507,115 +507,131 @@ namespace ShinFung
             {
                 connection.Open();
                 var command = connection.CreateCommand();
-                command.CommandText = @"  select * from userdata WHERE D_A > 0 AND valid > 0 ORDER BY id DESC";
-
+                //get targetnames
+                command.CommandText = @"  SELECT DISTINCT target_name FROM userdata WHERE valid > 0; ";
+                List<string> TargetNames = new List<string>();
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
                         object[] datas = new object[reader.FieldCount];
                         reader.GetValues(datas);
-                        ListItem output = new ListItem(datas);
-                        string path = Path.Combine(OutputFilePath, output.Datetime+"_"+ output.Name + "_" + "香油錢.txt");
-                        List<string> lines = new List<string>();
-                        lines.Add("姓名: " + output.Name);
-                        lines.Add("金額: " + output.D_A);
-                        lines.Add("地址: " + output.Address);
-                        lines.Add("電話: " + output.PhoneNumber);
-                        var data = new Dictionary<string, string>
-                        {
-                            { "nameApply", "" },
-                            { "phoneNum", "" },
-                            { "address", "" },
-                            { "Name0", "" },
-                            { "zod0", "" },
-                            { "age0", "" },
-                            { "1v0", "" },
-                            { "2v0", "" },
-                            { "3v0", "" },
-                            { "sin0", "" },
-                            { "Name1", "" },
-                            { "zod1", "" },
-                            { "age1", "" },
-                            { "1v1", "" },
-                            { "2v1", "" },
-                            { "3v1", "" },
-                            { "sin1", "" },
-                            { "Name2", "" },
-                            { "zod2", "" },
-                            { "age2", "" },
-                            { "1v2", "" },
-                            { "2v2", "" },
-                            { "3v2", "" },
-                            { "sin2", "" },
-                            { "Name3", "" },
-                            { "zod3", "" },
-                            { "age3", "" },
-                            { "1v3", "" },
-                            { "2v3", "" },
-                            { "3v3", "" },
-                            { "sin3", "" },
-                            { "Name4", "" },
-                            { "zod4", "" },
-                            { "age4", "" },
-                            { "1v4", "" },
-                            { "2v4", "" },
-                            { "3v4", "" },
-                            { "sin4", "" },
-                            { "Name5", "" },
-                            { "zod5", "" },
-                            { "age5", "" },
-                            { "1v5", "" },
-                            { "2v5", "" },
-                            { "3v5", "" },
-                            { "sin5", "" },
-                            { "Name6", "" },
-                            { "zod6", "" },
-                            { "age6", "" },
-                            { "1v6", "" },
-                            { "2v6", "" },
-                            { "3v6", "" },
-                            { "sin6", "" },
-                            { "Name7", "" },
-                            { "zod7", "" },
-                            { "age7", "" },
-                            { "1v7", "" },
-                            { "2v7", "" },
-                            { "3v7", "" },
-                            { "sin7", "" },
-                            { "Name8", "" },
-                            { "zod8", "" },
-                            { "age8", "" },
-                            { "1v8", "" },
-                            { "2v8", "" },
-                            { "3v8", "" },
-                            { "sin8", "" },
-                            { "Name9", "" },
-                            { "zod9", "" },
-                            { "age9", "" },
-                            { "1v9", "" },
-                            { "2v9", "" },
-                            { "3v9", "" },
-                            { "sin9", "" },
-                            { "suma", "" },
-                            { "sumb", "" },
-                            { "sumc", "" },
-                            { "sum", "" },
-                            { "oil", "" },
-                            { "bainame", "" },
-                            { "bsum", "" },
-                            { "naname", "" },
-                            { "nsum", "" },
-                            { "employname", "" },
-                            { "year", "" },
-                            { "mon", "" },
-                            { "day", "" }
-                        };
-
-                        Directory.CreateDirectory(OutputFilePath);
-                        CreateWordFile(data, OutputFilePath, output.Datetime + "_" + output.Name + "_" + "香油錢.docx");
-                        //File.WriteAllLines(path,lines);
+                        TargetNames.Add(datas[0].ToString());
                     }
+
+                    foreach (string targetName in TargetNames)
+                    {
+                        using ( command = new SqliteCommand("SELECT * FROM userdata WHERE target_name = $TargetName AND valid > 0", connection))
+                        {
+                            command.Parameters.AddWithValue("$TargetName", targetName);
+
+                            using (SqliteDataReader reader2 = command.ExecuteReader())
+                            {
+                                List<ListItem> members = new List<ListItem>();
+                                while (reader2.Read())
+                                {
+                                    object[] datas = new object[reader2.FieldCount];
+                                    reader2.GetValues(datas);
+                                    ListItem output = new ListItem(datas);
+                                    members.Add(output);
+                                }
+                            }
+                        }
+                    }
+
+                    var data = new Dictionary<string, string>
+                    {
+                        { "nameApply", "" },
+                        { "phoneNum", "" },
+                        { "address", "" },
+                        { "Name0", "" },
+                        { "zod0", "" },
+                        { "age0", "" },
+                        { "1v0", "" },
+                        { "2v0", "" },
+                        { "3v0", "" },
+                        { "sin0", "" },
+                        { "Name1", "" },
+                        { "zod1", "" },
+                        { "age1", "" },
+                        { "1v1", "" },
+                        { "2v1", "" },
+                        { "3v1", "" },
+                        { "sin1", "" },
+                        { "Name2", "" },
+                        { "zod2", "" },
+                        { "age2", "" },
+                        { "1v2", "" },
+                        { "2v2", "" },
+                        { "3v2", "" },
+                        { "sin2", "" },
+                        { "Name3", "" },
+                        { "zod3", "" },
+                        { "age3", "" },
+                        { "1v3", "" },
+                        { "2v3", "" },
+                        { "3v3", "" },
+                        { "sin3", "" },
+                        { "Name4", "" },
+                        { "zod4", "" },
+                        { "age4", "" },
+                        { "1v4", "" },
+                        { "2v4", "" },
+                        { "3v4", "" },
+                        { "sin4", "" },
+                        { "Name5", "" },
+                        { "zod5", "" },
+                        { "age5", "" },
+                        { "1v5", "" },
+                        { "2v5", "" },
+                        { "3v5", "" },
+                        { "sin5", "" },
+                        { "Name6", "" },
+                        { "zod6", "" },
+                        { "age6", "" },
+                        { "1v6", "" },
+                        { "2v6", "" },
+                        { "3v6", "" },
+                        { "sin6", "" },
+                        { "Name7", "" },
+                        { "zod7", "" },
+                        { "age7", "" },
+                        { "1v7", "" },
+                        { "2v7", "" },
+                        { "3v7", "" },
+                        { "sin7", "" },
+                        { "Name8", "" },
+                        { "zod8", "" },
+                        { "age8", "" },
+                        { "1v8", "" },
+                        { "2v8", "" },
+                        { "3v8", "" },
+                        { "sin8", "" },
+                        { "Name9", "" },
+                        { "zod9", "" },
+                        { "age9", "" },
+                        { "1v9", "" },
+                        { "2v9", "" },
+                        { "3v9", "" },
+                        { "sin9", "" },
+                        { "suma", "" },
+                        { "sumb", "" },
+                        { "sumc", "" },
+                        { "sum", "" },
+                        { "oil", "" },
+                        { "bainame", "" },
+                        { "bsum", "" },
+                        { "naname", "" },
+                        { "nsum", "" },
+                        { "employname", "" },
+                        { "year", "" },
+                        { "mon", "" },
+                        { "day", "" }
+                    };
+
+                    //Directory.CreateDirectory(OutputFilePath);
+                    //CreateWordFile(data, OutputFilePath, output.Datetime + "_" + output.Name + "_" + "香油錢.docx");
+                    //File.WriteAllLines(path,lines);
                 }
             }
         }
@@ -850,6 +866,11 @@ namespace ShinFung
         private void Edit_Click(object sender, RoutedEventArgs e)
         {
             EditSelected();
+        }
+
+        private void GenerateShinWord(object sender, RoutedEventArgs e)
+        {
+            Get_D_A();
         }
     }
 
