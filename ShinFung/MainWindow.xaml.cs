@@ -26,6 +26,7 @@ using CheckBox = System.Windows.Controls.CheckBox;
 using Run = DocumentFormat.OpenXml.Wordprocessing.Run;
 using Text = DocumentFormat.OpenXml.Wordprocessing.Text;
 using System.Security.Cryptography;
+using DocumentFormat.OpenXml.ExtendedProperties;
 
 namespace ShinFung
 {
@@ -501,7 +502,7 @@ namespace ShinFung
         private void Get_D_A()
         {
             string DbFilePath = Path.Combine(DocumentPath, DataFolder, DbFileName);
-            string OutputFilePath = Path.Combine(DocumentPath, DataFolder,"香油錢");
+            string OutputFilePath = Path.Combine(DocumentPath, DataFolder,"名單");
             string _connectionString = "Data Source=" + DbFilePath;
             using (var connection = new SqliteConnection(_connectionString))
             {
@@ -536,98 +537,86 @@ namespace ShinFung
                                     members.Add(output);
                                     // done getting member try generate word
                                     //calculate pages
-                                    int pages = (members.Count % 10 ) + 1;
+                                    int addLeft = 0;
+                                    if(members.Count % 10 > 0)
+                                    {
+                                        //has left
+                                        addLeft = 1;
+                                    }
+                                    int pages = (members.Count / 10 ) + addLeft;
                                     for(int i = 0; i < pages; i++)
                                     {
+                                        ListItem target = null;
+                                        bool IsTargetGet = false;
+                                        //get target info
+                                        using (command = new SqliteCommand("SELECT * FROM userdata WHERE name = $TargetName AND valid > 0 ORDER BY datetime DESC", connection))
+                                        {
+                                            command.Parameters.AddWithValue("$TargetName", members[i * 10 + 0].Target_Name);
+                                            using (SqliteDataReader readertarget = command.ExecuteReader()) 
+                                            {
+                                                if (readertarget.Read())
+                                                {
+                                                    readertarget.GetValues(datas);
+                                                    target = new ListItem(datas);
+                                                    IsTargetGet = true;
+                                                }
+                                            }
+                                        }
+
                                         var data = new Dictionary<string, string>
                                         {
-                                            { "nameApply", "" },
-                                            { "phoneNum", "" },
-                                            { "address", "" },
-                                            { "Name0", "" },
-                                            { "zod0", "" },
-                                            { "age0", "" },
-                                            { "1v0", "" },
-                                            { "2v0", "" },
-                                            { "3v0", "" },
-                                            { "sin0", "" },
-                                            { "Name1", "" },
-                                            { "zod1", "" },
-                                            { "age1", "" },
-                                            { "1v1", "" },
-                                            { "2v1", "" },
-                                            { "3v1", "" },
-                                            { "sin1", "" },
-                                            { "Name2", "" },
-                                            { "zod2", "" },
-                                            { "age2", "" },
-                                            { "1v2", "" },
-                                            { "2v2", "" },
-                                            { "3v2", "" },
-                                            { "sin2", "" },
-                                            { "Name3", "" },
-                                            { "zod3", "" },
-                                            { "age3", "" },
-                                            { "1v3", "" },
-                                            { "2v3", "" },
-                                            { "3v3", "" },
-                                            { "sin3", "" },
-                                            { "Name4", "" },
-                                            { "zod4", "" },
-                                            { "age4", "" },
-                                            { "1v4", "" },
-                                            { "2v4", "" },
-                                            { "3v4", "" },
-                                            { "sin4", "" },
-                                            { "Name5", "" },
-                                            { "zod5", "" },
-                                            { "age5", "" },
-                                            { "1v5", "" },
-                                            { "2v5", "" },
-                                            { "3v5", "" },
-                                            { "sin5", "" },
-                                            { "Name6", "" },
-                                            { "zod6", "" },
-                                            { "age6", "" },
-                                            { "1v6", "" },
-                                            { "2v6", "" },
-                                            { "3v6", "" },
-                                            { "sin6", "" },
-                                            { "Name7", "" },
-                                            { "zod7", "" },
-                                            { "age7", "" },
-                                            { "1v7", "" },
-                                            { "2v7", "" },
-                                            { "3v7", "" },
-                                            { "sin7", "" },
-                                            { "Name8", "" },
-                                            { "zod8", "" },
-                                            { "age8", "" },
-                                            { "1v8", "" },
-                                            { "2v8", "" },
-                                            { "3v8", "" },
-                                            { "sin8", "" },
-                                            { "Name9", "" },
-                                            { "zod9", "" },
-                                            { "age9", "" },
-                                            { "1v9", "" },
-                                            { "2v9", "" },
-                                            { "3v9", "" },
-                                            { "sin9", "" },
-                                            { "suma", "" },
-                                            { "sumb", "" },
-                                            { "sumc", "" },
-                                            { "sum", "" },
-                                            { "oil", "" },
-                                            { "bainame", "" },
-                                            { "bsum", "" },
-                                            { "naname", "" },
-                                            { "nsum", "" },
-                                            { "employname", "" },
-                                            { "year", "" },
-                                            { "mon", "" },
-                                            { "day", "" }
+                                            { "nameApply", members[i * 10 + 0].Target_Name },
+                                            { "phoneNum", IsTargetGet ? target.PhoneNumber : "" },
+                                            { "address", IsTargetGet ? target.Address : "" },
                                         };
+
+                                        int memberCount = members.Count; // Get the total number of members
+                                        int maxIndex = Math.Min(10, memberCount - i * 10); // Calculate how many members are available starting at i * 10
+
+
+                                        // Dynamically add entries for indices 0 to 9
+                                        for (int n = 0; n < maxIndex; n++)
+                                        {
+                                            data.Add($"Name{n}", members[i * 10 + n].Name);
+                                            data.Add($"zod{n}", members[i * 10 + n].Zodiac);
+                                            data.Add($"age{n}", members[i * 10 + n].Age);
+                                            data.Add($"1v{n}", ""); // Placeholder for additional values
+                                            data.Add($"2v{n}", "");
+                                            data.Add($"3v{n}", "");
+                                            data.Add($"sin{n}", "");
+                                        }
+
+                                        // Fill the remaining keys with empty strings
+                                        for (int n = maxIndex; n < 10; n++)
+                                        {
+                                            data.Add($"Name{n}", "");
+                                            data.Add($"zod{n}", "");
+                                            data.Add($"age{n}", "");
+                                            data.Add($"1v{n}", "");
+                                            data.Add($"2v{n}", "");
+                                            data.Add($"3v{n}", "");
+                                            data.Add($"sin{n}", "");
+                                        }
+
+
+                                        // Add the remaining static keys
+                                        data.Add("suma", "");
+                                        data.Add("sumb", "");
+                                        data.Add("sumc", "");
+                                        data.Add("sum", "");
+                                        data.Add("oil", "");
+                                        data.Add("bainame", "");
+                                        data.Add("bsum", "");
+                                        data.Add("naname", "");
+                                        data.Add("nsum", "");
+                                        data.Add("employname", "");
+                                        data.Add("year", "");
+                                        data.Add("mon", "");
+                                        data.Add("day", ""); 
+                                        data.Add("totalsum", "");
+                                        Directory.CreateDirectory(OutputFilePath);
+                                        CreateWordFile(data, OutputFilePath, members[i * 10 + 0].Target_Name + "_" + i.ToString() + "_" + "名單.docx");
+                                        //File.WriteAllLines(path, lines);
                                     }
                                 }
                             }
@@ -635,9 +624,7 @@ namespace ShinFung
                     }
 
 
-                    //Directory.CreateDirectory(OutputFilePath);
-                    //CreateWordFile(data, OutputFilePath, output.Datetime + "_" + output.Name + "_" + "香油錢.docx");
-                    //File.WriteAllLines(path,lines);
+                   
                 }
             }
         }
