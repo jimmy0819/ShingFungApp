@@ -38,8 +38,6 @@
                                 <GridViewColumn Header="電話號碼" Width="auto" DisplayMemberBinding="{Binding PhoneNumber}"></GridViewColumn>
                                 <GridViewColumn Header="日期" Width="auto" DisplayMemberBinding="{Binding Datetime}"></GridViewColumn>
                                 <GridViewColumn Header="總和" Width="auto" DisplayMemberBinding="{Binding Sum}"></GridViewColumn>
-                                <GridViewColumn Header="拜亭名稱" Width="auto" DisplayMemberBinding="{Binding S_D_Name}"></GridViewColumn>
-                                <GridViewColumn Header="內殿名稱" Width="auto" DisplayMemberBinding="{Binding S_E_Name}"></GridViewColumn>
                                 <GridViewColumn Header="地址" Width="auto" DisplayMemberBinding="{Binding Address}"></GridViewColumn>
                                 <GridViewColumn Header="對象名稱" Width="auto" DisplayMemberBinding="{Binding Target_Name}"></GridViewColumn>
                                 <GridViewColumn Header="經手人" Width="auto" DisplayMemberBinding="{Binding Employee_Name}"></GridViewColumn>

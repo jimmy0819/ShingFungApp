@@ -27,6 +27,7 @@ using Run = DocumentFormat.OpenXml.Wordprocessing.Run;
 using Text = DocumentFormat.OpenXml.Wordprocessing.Text;
 using System.Security.Cryptography;
 using DocumentFormat.OpenXml.ExtendedProperties;
+using System.Threading;
 
 namespace ShinFung
 {
@@ -61,7 +62,7 @@ namespace ShinFung
             InitializeComponent();
             CreateDataBase();
             BaseBindings();
-            ReadAllFromDb();
+            ReadAllFromDbThread();
         }
         private void BaseBindings()
         {
@@ -97,9 +98,18 @@ namespace ShinFung
         {
             ReadAllFromDb();
         }
+
+        private void ClearItems()
+        {
+            this.Dispatcher.Invoke(() =>
+            {
+                Items.Clear();
+            });
+        }
+
         private void ReadAllFromDb()
         {
-            Items.Clear();
+            ClearItems();
             string DbFilePath = Path.Combine(DocumentPath, DataFolder, DbFileName);
             string _connectionString = "Data Source=" + DbFilePath;
             using (var connection = new SqliteConnection(_connectionString))
@@ -114,10 +124,17 @@ namespace ShinFung
                     {
                         object[] datas = new object[reader.FieldCount];
                         reader.GetValues(datas);
-                        Items.Add(new ListItem(datas));
+                        AddList(new ListItem(datas));
                     }
                 }
             }
+        }
+
+        private void ReadAllFromDbThread()
+        {
+            // Start a new background thread for the long-running task
+            Thread backgroundThread = new Thread(ReadAllFromDb);
+            backgroundThread.Start();
         }
 
         private void EditSelected()
@@ -235,11 +252,13 @@ namespace ShinFung
         }
         private void ClearList()
         {
-            Items.Clear();
+            ClearItems();
         }
         private void AddList(ListItem listItem  )
         {
-            Items.Add(listItem);
+            this.Dispatcher.Invoke(() => {
+                Items.Add(listItem);
+            });
         }
         private int Insert()
         {
@@ -349,6 +368,7 @@ namespace ShinFung
 
         private void Search(object sender, RoutedEventArgs e)
         {
+            ClearList();
             if(CheckBox_D_A.IsChecked == true)
             {
                 //Get_D_A();// read and write files
