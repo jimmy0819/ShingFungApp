@@ -79,27 +79,7 @@ namespace ShinFung
                 connection.Open();
                 var command = connection.CreateCommand();
                 //YYYY-MM-DD HH:MM:SS.SSS
-                string tableString = @"CREATE TABLE userdata (
-                                        id INTEGER PRIMARY KEY,
-                                        name STRING,
-                                        zodiac STRING,
-                                        age INTEGER,
-                                        S_A INTEGER,
-                                        S_B INTEGER,
-                                        S_C INTEGER,
-                                        S_C_type INTEGER,
-                                        S_D INTEGER,
-                                        S_E INTEGER,
-                                        address STRING,
-                                        D_A INTEGER,
-                                        D_B INTEGER,
-                                        phonenumber STRING,
-                                        datetime INTEGER,
-                                        sum INTEGER,
-                                        target_name STRING,
-                                        employee_name STRING,
-                                        valid INTEGER
-                                        );";
+                string tableString = SqlStruct.BaseStruct;
                 command.CommandText = tableString;
                 command.ExecuteNonQuery();
             }
