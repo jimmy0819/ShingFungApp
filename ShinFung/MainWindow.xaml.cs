@@ -130,6 +130,15 @@ namespace ShinFung
             }
         }
 
+        private void CalculateTotalSum() 
+        {
+            int total = 0;
+            foreach( ListItem item in Items)
+            {
+                total += int.Parse(item.Sum);
+            }
+        }
+
         private void ReadAllFromDbThread()
         {
             // Start a new background thread for the long-running task
@@ -472,9 +481,9 @@ namespace ShinFung
         /// </summary>
         /// <param name="strings"></param>
         /// <param name="ResultFolder"></param>
-        private void CreateWordFile(Dictionary<string, string> stringDic, string ResultFolder, string filename) 
+        private void CreateWordFile(Dictionary<string, string> stringDic, string ResultFolder, string filename, string wordTemplateName) 
         {
-            string filepath = Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "shinword.docx");
+            string filepath = Path.Combine( AppDomain.CurrentDomain.BaseDirectory, wordTemplateName);
             var docxBytes = WordRender.GenerateDocx(File.ReadAllBytes(filepath),stringDic);
             File.WriteAllBytes(
                 Path.Combine(ResultFolder, filename),
@@ -535,90 +544,93 @@ namespace ShinFung
                                     readerMember.GetValues(datas);
                                     ListItem output = new ListItem(datas);
                                     members.Add(output);
-                                    // done getting member try generate word
-                                    //calculate pages
-                                    int addLeft = 0;
-                                    if(members.Count % 10 > 0)
+                                }
+                                // done getting member try generate word
+                                //calculate pages
+                                int addLeft = 0;
+                                if(members.Count % 10 > 0)
+                                {
+                                    //has left
+                                    addLeft = 1;
+                                }
+                                int pages = (members.Count / 10 ) + addLeft;
+                                for(int i = 0; i < pages; i++)
+                                {
+                                    ListItem target = null;
+                                    bool IsTargetGet = false;
+                                    //get target info
+                                    using (command = new SqliteCommand("SELECT * FROM userdata WHERE name = $TargetName AND valid > 0 ORDER BY datetime DESC", connection))
                                     {
-                                        //has left
-                                        addLeft = 1;
-                                    }
-                                    int pages = (members.Count / 10 ) + addLeft;
-                                    for(int i = 0; i < pages; i++)
-                                    {
-                                        ListItem target = null;
-                                        bool IsTargetGet = false;
-                                        //get target info
-                                        using (command = new SqliteCommand("SELECT * FROM userdata WHERE name = $TargetName AND valid > 0 ORDER BY datetime DESC", connection))
+                                        command.Parameters.AddWithValue("$TargetName", members[i * 10 + 0].Target_Name);
+                                        using (SqliteDataReader readertarget = command.ExecuteReader()) 
                                         {
-                                            command.Parameters.AddWithValue("$TargetName", members[i * 10 + 0].Target_Name);
-                                            using (SqliteDataReader readertarget = command.ExecuteReader()) 
+                                            if (readertarget.Read())
                                             {
-                                                if (readertarget.Read())
-                                                {
-                                                    readertarget.GetValues(datas);
-                                                    target = new ListItem(datas);
-                                                    IsTargetGet = true;
-                                                }
+                                                object[] datas = new object[readertarget.FieldCount];
+                                                readertarget.GetValues(datas);
+                                                target = new ListItem(datas);
+                                                IsTargetGet = true;
                                             }
                                         }
-
-                                        var data = new Dictionary<string, string>
-                                        {
-                                            { "nameApply", members[i * 10 + 0].Target_Name },
-                                            { "phoneNum", IsTargetGet ? target.PhoneNumber : "" },
-                                            { "address", IsTargetGet ? target.Address : "" },
-                                        };
-
-                                        int memberCount = members.Count; // Get the total number of members
-                                        int maxIndex = Math.Min(10, memberCount - i * 10); // Calculate how many members are available starting at i * 10
-
-
-                                        // Dynamically add entries for indices 0 to 9
-                                        for (int n = 0; n < maxIndex; n++)
-                                        {
-                                            data.Add($"Name{n}", members[i * 10 + n].Name);
-                                            data.Add($"zod{n}", members[i * 10 + n].Zodiac);
-                                            data.Add($"age{n}", members[i * 10 + n].Age);
-                                            data.Add($"1v{n}", ""); // Placeholder for additional values
-                                            data.Add($"2v{n}", "");
-                                            data.Add($"3v{n}", "");
-                                            data.Add($"sin{n}", "");
-                                        }
-
-                                        // Fill the remaining keys with empty strings
-                                        for (int n = maxIndex; n < 10; n++)
-                                        {
-                                            data.Add($"Name{n}", "");
-                                            data.Add($"zod{n}", "");
-                                            data.Add($"age{n}", "");
-                                            data.Add($"1v{n}", "");
-                                            data.Add($"2v{n}", "");
-                                            data.Add($"3v{n}", "");
-                                            data.Add($"sin{n}", "");
-                                        }
-
-
-                                        // Add the remaining static keys
-                                        data.Add("suma", "");
-                                        data.Add("sumb", "");
-                                        data.Add("sumc", "");
-                                        data.Add("sum", "");
-                                        data.Add("oil", "");
-                                        data.Add("bainame", "");
-                                        data.Add("bsum", "");
-                                        data.Add("naname", "");
-                                        data.Add("nsum", "");
-                                        data.Add("employname", "");
-                                        data.Add("year", "");
-                                        data.Add("mon", "");
-                                        data.Add("day", ""); 
-                                        data.Add("totalsum", "");
-                                        Directory.CreateDirectory(OutputFilePath);
-                                        CreateWordFile(data, OutputFilePath, members[i * 10 + 0].Target_Name + "_" + i.ToString() + "_" + "名單.docx");
-                                        //File.WriteAllLines(path, lines);
                                     }
+
+                                    var data = new Dictionary<string, string>
+                                    {
+                                        { "nameApply", IsTargetGet ? target.Name:"" },
+                                        { "phoneNum", IsTargetGet ? target.PhoneNumber : "" },
+                                        { "address", IsTargetGet ? target.Address : "" },
+                                    };
+
+                                    int memberCount = members.Count; // Get the total number of members
+                                    int maxIndex = Math.Min(10, memberCount - i * 10); // Calculate how many members are available starting at i * 10
+
+
+                                    // Dynamically add entries for indices 0 to 9
+                                    for (int n = 0; n < maxIndex; n++)
+                                    {
+                                        data.Add($"Name{n}", members[i * 10 + n].Name);
+                                        data.Add($"zod{n}", members[i * 10 + n].Zodiac);
+                                        data.Add($"age{n}", members[i * 10 + n].Age);
+                                        data.Add($"1v{n}", ""); // Placeholder for additional values
+                                        data.Add($"2v{n}", "");
+                                        data.Add($"3v{n}", "");
+                                        data.Add($"sin{n}", "");
+                                    }
+
+                                    // Fill the remaining keys with empty strings
+                                    for (int n = maxIndex; n < 10; n++)
+                                    {
+                                        data.Add($"Name{n}", "");
+                                        data.Add($"zod{n}", "");
+                                        data.Add($"age{n}", "");
+                                        data.Add($"1v{n}", "");
+                                        data.Add($"2v{n}", "");
+                                        data.Add($"3v{n}", "");
+                                        data.Add($"sin{n}", "");
+                                    }
+
+
+                                    // Add the remaining static keys
+                                    data.Add("suma", "");
+                                    data.Add("sumb", "");
+                                    data.Add("sumc", "");
+                                    data.Add("sum", "");
+                                    data.Add("oil", "");
+                                    data.Add("bainame", "");
+                                    data.Add("bsum", "");
+                                    data.Add("naname", "");
+                                    data.Add("nsum", "");
+                                    data.Add("employname", "");
+                                    data.Add("year", "");
+                                    data.Add("mon", "");
+                                    data.Add("day", ""); 
+                                    data.Add("totalsum", "");
+                                    Directory.CreateDirectory(OutputFilePath);
+                                    //"shinword2.docx"
+                                    CreateWordFile(data, OutputFilePath, members[i * 10 + 0].Target_Name + "_" + i.ToString() + "_" + "名單.docx", "ShingWord2.docx");
+                                    //File.WriteAllLines(path, lines);
                                 }
+                                
                             }
                         }
                     }
