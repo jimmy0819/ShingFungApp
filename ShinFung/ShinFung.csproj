@@ -11,6 +11,7 @@
     <None Remove="shin.docx" />
     <None Remove="ShingWord2.docx" />
     <None Remove="shinword.docx" />
+    <None Remove="shinWord3.docx" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +27,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="shinword.docx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="shinWord3.docx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

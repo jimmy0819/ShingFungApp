@@ -627,7 +627,7 @@ namespace ShinFung
                                     data.Add("totalsum", "");
                                     Directory.CreateDirectory(OutputFilePath);
                                     //"shinword2.docx"
-                                    CreateWordFile(data, OutputFilePath, members[i * 10 + 0].Target_Name + "_" + i.ToString() + "_" + "名單.docx", "ShingWord2.docx");
+                                    CreateWordFile(data, OutputFilePath, members[i * 10 + 0].Target_Name + "_" + i.ToString() + "_" + "名單.docx", "shinWord3.docx");
                                     //File.WriteAllLines(path, lines);
                                 }
                                 
