@@ -513,6 +513,7 @@ namespace ShinFung
             string DbFilePath = Path.Combine(DocumentPath, DataFolder, DbFileName);
             string OutputFilePath = Path.Combine(DocumentPath, DataFolder,"名單");
             string _connectionString = "Data Source=" + DbFilePath;
+            const int numPerPage = 8;
             using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
@@ -548,12 +549,12 @@ namespace ShinFung
                                 // done getting member try generate word
                                 //calculate pages
                                 int addLeft = 0;
-                                if(members.Count % 10 > 0)
+                                if(members.Count % numPerPage > 0)
                                 {
                                     //has left
                                     addLeft = 1;
                                 }
-                                int pages = (members.Count / 10 ) + addLeft;
+                                int pages = (members.Count / numPerPage) + addLeft;
                                 for(int i = 0; i < pages; i++)
                                 {
                                     ListItem target = null;
@@ -561,7 +562,7 @@ namespace ShinFung
                                     //get target info
                                     using (command = new SqliteCommand("SELECT * FROM userdata WHERE name = $TargetName AND valid > 0 ORDER BY datetime DESC", connection))
                                     {
-                                        command.Parameters.AddWithValue("$TargetName", members[i * 10 + 0].Target_Name);
+                                        command.Parameters.AddWithValue("$TargetName", members[i * numPerPage + 0].Target_Name);
                                         using (SqliteDataReader readertarget = command.ExecuteReader()) 
                                         {
                                             if (readertarget.Read())
@@ -582,15 +583,15 @@ namespace ShinFung
                                     };
 
                                     int memberCount = members.Count; // Get the total number of members
-                                    int maxIndex = Math.Min(10, memberCount - i * 10); // Calculate how many members are available starting at i * 10
+                                    int maxIndex = Math.Min(numPerPage, memberCount - i * numPerPage); // Calculate how many members are available starting at i * 10
 
 
                                     // Dynamically add entries for indices 0 to 9
                                     for (int n = 0; n < maxIndex; n++)
                                     {
-                                        data.Add($"Name{n}", members[i * 10 + n].Name);
-                                        data.Add($"zod{n}", members[i * 10 + n].Zodiac);
-                                        data.Add($"age{n}", members[i * 10 + n].Age);
+                                        data.Add($"Name{n}", members[i * numPerPage + n].Name);
+                                        data.Add($"zod{n}", members[i * numPerPage + n].Zodiac);
+                                        data.Add($"age{n}", members[i * numPerPage + n].Age);
                                         data.Add($"1v{n}", ""); // Placeholder for additional values
                                         data.Add($"2v{n}", "");
                                         data.Add($"3v{n}", "");
@@ -598,7 +599,7 @@ namespace ShinFung
                                     }
 
                                     // Fill the remaining keys with empty strings
-                                    for (int n = maxIndex; n < 10; n++)
+                                    for (int n = maxIndex; n < numPerPage; n++)
                                     {
                                         data.Add($"Name{n}", "");
                                         data.Add($"zod{n}", "");
@@ -627,7 +628,7 @@ namespace ShinFung
                                     data.Add("totalsum", "");
                                     Directory.CreateDirectory(OutputFilePath);
                                     //"shinword2.docx"
-                                    CreateWordFile(data, OutputFilePath, members[i * 10 + 0].Target_Name + "_" + i.ToString() + "_" + "名單.docx", "shinWord3.docx");
+                                    CreateWordFile(data, OutputFilePath, members[i * numPerPage + 0].Target_Name + "_" + i.ToString() + "_" + "名單.docx", "shinWord3.docx");
                                     //File.WriteAllLines(path, lines);
                                 }
                                 
