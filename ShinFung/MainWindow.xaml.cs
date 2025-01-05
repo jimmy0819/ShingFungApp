@@ -538,15 +538,52 @@ namespace ShinFung
 
                             using (SqliteDataReader readerMember = command.ExecuteReader())
                             {
-                                List<ListItem> members = new List<ListItem>();
+                                List<ListItem> membersRaw = new List<ListItem>();
                                 while (readerMember.Read())
                                 {
                                     object[] datas = new object[readerMember.FieldCount];
                                     readerMember.GetValues(datas);
                                     ListItem output = new ListItem(datas);
-                                    members.Add(output);
+                                    membersRaw.Add(output);
                                 }
                                 // done getting member try generate word
+                                //calculate in block and in lantern
+                                List<ListItem> members = new List<ListItem>();
+                                List<ListItem> lanterns = new List<ListItem>();
+                                foreach (ListItem output in membersRaw)
+                                {
+                                    //no lantern
+                                    if (output.S_D.Equals("0") && output.S_E.Equals("0"))
+                                    {
+                                        //add to members
+                                        members.Add(output);
+                                    }
+                                    //lantern only
+                                    else if((!output.S_D.Equals("0") || !output.S_E.Equals("0"))
+                                        && output.S_A.Equals("0")
+                                        && output.S_B.Equals("0")
+                                        && output.S_C.Equals("0"))
+                                    {
+                                        //add lantern
+                                        lanterns.Add(output);
+                                    }
+                                    
+                                    //lantern and block
+                                    else if ((!output.S_D.Equals("0") || !output.S_E.Equals("0"))
+                                        &&( output.S_A.Equals("0")
+                                        || output.S_B.Equals("0")
+                                        || output.S_C.Equals("0")))
+                                    {
+                                        //add both
+                                        members.Add(output);
+                                        lanterns.Add(output);
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show("Exceptiont D_A");
+                                    }
+                                }
+
                                 //calculate pages
                                 int addLeft = 0;
                                 if(members.Count % numPerPage > 0)
@@ -610,6 +647,23 @@ namespace ShinFung
                                         data.Add($"sin{n}", "");
                                     }
 
+                                    string S_D_String = "";
+                                    string S_E_String = "";
+                                    //prepare lantern strings
+                                    foreach (ListItem lant in lanterns)
+                                    {
+                                       
+                                        if (!lant.S_D.Equals("0")) 
+                                        {
+                                            S_D_String = lant.Name + " ";
+                                            
+                                        }
+                                        if (!lant.S_E.Equals("0")) 
+                                        {
+                                            S_E_String = lant.Name + " ";
+                                           
+                                        }
+                                    }
 
                                     // Add the remaining static keys
                                     data.Add("suma", "");
@@ -617,9 +671,9 @@ namespace ShinFung
                                     data.Add("sumc", "");
                                     data.Add("sum", "");
                                     data.Add("oil", "");
-                                    data.Add("bainame", "");
+                                    data.Add("bainame", S_D_String);
                                     data.Add("bsum", "");
-                                    data.Add("naname", "");
+                                    data.Add("naname", S_E_String);
                                     data.Add("nsum", "");
                                     data.Add("employname", "");
                                     data.Add("year", "");
@@ -973,6 +1027,8 @@ namespace ShinFung
             Valid = datas[18].ToString();
             Tick = DateTimeTickParse(datas);
         }
+
+       
         private string IndexToSCType(int i)
         {
             if (i < 0)
